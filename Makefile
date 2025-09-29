@@ -1,34 +1,47 @@
 NAME := philo
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror
-THREADFLAGS := -pthread
 
-INCLUDES := -I include
+CFLAGS := -Wall -Wextra -Werror
+CPPFLAGS := -I include
+LDFLAGS :=
+LDLIBS := -pthread
 
 SRC := \
-  src/main.c \
-  src/init.c \
-  src/simulation.c \
-  src/utils.c \
-  src/print.c \
-  src/cleanup.c
+    src/main.c \
+    src/init.c \
+    src/simulation.c \
+    src/utils.c \
+    src/print.c \
+    src/cleanup.c
 
 OBJ := $(SRC:.c=.o)
+DEP := $(OBJ:.o=.d)
 
+# 既定ターゲット
 all: $(NAME)
 
-$(NAME): $(SRC) include/philo.h
-	$(CC) $(CFLAGS) $(THREADFLAGS) $(SRC) $(INCLUDES) -o $(NAME)
+# リンク
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) $(LDLIBS) -o $@
+
+# 各 .c -> .o （依存関係ファイル生成）
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -MMD -MP -c $< -o $@
+
+# 依存関係読み込み
+-include $(DEP)
 
 clean:
-	@true
+	$(RM) $(OBJ) $(DEP)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+# オプション: デバッグ用
+debug: CFLAGS += -g -O0
+debug: re
 
-
+.PHONY: all clean fclean re debug
