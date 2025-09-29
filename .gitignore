@@ -1,0 +1,24 @@
+# Compiled binary
+philo
+
+# Object files
+*.o
+*.obj
+
+# Debug files
+*.dSYM/
+*.gdb_history
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Temporary files
+/tmp/
+*.tmp
