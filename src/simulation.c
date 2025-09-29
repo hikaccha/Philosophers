@@ -1,137 +1,178 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   simulation.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
+/*   Updated: 2025/09/28 19:30:46 by ichikawahik      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-static void take_forks(t_philo *ph)
+void	take_forks(t_philo *ph)
 {
-    t_state *st = ph->state;
-    int left = ph->left_fork_index;
-    int right = ph->right_fork_index;
+	t_state	*st;
+	int		left;
+	int		right;
 
-    if (ph->id % 2 == 0)
-    {
-        pthread_mutex_lock(&st->forks[right]);
-        log_action(st, ph->id, "has taken a fork", false);
-        pthread_mutex_lock(&st->forks[left]);
-        log_action(st, ph->id, "has taken a fork", false);
-    }
-    else
-    {
-        pthread_mutex_lock(&st->forks[left]);
-        log_action(st, ph->id, "has taken a fork", false);
-        pthread_mutex_lock(&st->forks[right]);
-        log_action(st, ph->id, "has taken a fork", false);
-    }
+	st = ph->state;
+	left = ph->left_fork_index;
+	right = ph->right_fork_index;
+	if (ph->id % 2 == 0)
+	{
+		pthread_mutex_lock(&st->forks[right]);
+		log_action(st, ph->id, "has taken a fork", false);
+		pthread_mutex_lock(&st->forks[left]);
+		log_action(st, ph->id, "has taken a fork", false);
+	}
+	else
+	{
+		pthread_mutex_lock(&st->forks[left]);
+		log_action(st, ph->id, "has taken a fork", false);
+		pthread_mutex_lock(&st->forks[right]);
+		log_action(st, ph->id, "has taken a fork", false);
+	}
 }
 
-static void put_forks(t_philo *ph)
+void	put_forks(t_philo *ph)
 {
-    t_state *st = ph->state;
-    pthread_mutex_unlock(&st->forks[ph->left_fork_index]);
-    pthread_mutex_unlock(&st->forks[ph->right_fork_index]);
+	t_state	*st;
+
+	st = ph->state;
+	pthread_mutex_unlock(&st->forks[ph->left_fork_index]);
+	pthread_mutex_unlock(&st->forks[ph->right_fork_index]);
 }
 
-static bool is_sim_over(t_state *st)
+bool	is_sim_over(t_state *st)
 {
-    bool end;
-    pthread_mutex_lock(&st->state_mutex);
-    end = st->simulation_end;
-    pthread_mutex_unlock(&st->state_mutex);
-    return end;
+	bool	end;
+
+	pthread_mutex_lock(&st->state_mutex);
+	end = st->simulation_end;
+	pthread_mutex_unlock(&st->state_mutex);
+	return (end);
 }
 
-static void eat(t_philo *ph)
+void	eat(t_philo *ph)
 {
-    t_state *st = ph->state;
-    log_action(st, ph->id, "is eating", false);
-    pthread_mutex_lock(&st->state_mutex);
-    ph->last_meal_ms = now_ms();
-    ph->meals_eaten += 1;
-    pthread_mutex_unlock(&st->state_mutex);
-    sleep_ms_interruptible(st, st->config.time_to_eat_ms);
+	t_state	*st;
+
+	st = ph->state;
+	log_action(st, ph->id, "is eating", false);
+	pthread_mutex_lock(&st->state_mutex);
+	ph->last_meal_ms = now_ms();
+	ph->meals_eaten += 1;
+	pthread_mutex_unlock(&st->state_mutex);
+	sleep_ms_interruptible(st, st->config.time_to_eat_ms);
 }
 
-static void philo_sleep_and_think(t_philo *ph)
+void	philo_sleep_and_think(t_philo *ph)
 {
-    log_action(ph->state, ph->id, "is sleeping", false);
-    sleep_ms_interruptible(ph->state, ph->state->config.time_to_sleep_ms);
-    log_action(ph->state, ph->id, "is thinking", false);
+	log_action(ph->state, ph->id, "is sleeping", false);
+	sleep_ms_interruptible(ph->state, ph->state->config.time_to_sleep_ms);
+	log_action(ph->state, ph->id, "is thinking", false);
 }
 
-void *philosopher_routine(void *arg)
+static void one_philo_edge(t_philo *ph)
 {
-    t_philo *ph = (t_philo *)arg;
-    t_state *st = ph->state;
+	t_state	*st;
 
-    if (st->config.number_of_philosophers == 1)
-    {
-        // Edge case: only one fork; take it and wait for death
-        pthread_mutex_lock(&st->forks[ph->left_fork_index]);
-        log_action(st, ph->id, "has taken a fork", false);
-        while (!is_sim_over(st))
-            usleep(1000);
-        pthread_mutex_unlock(&st->forks[ph->left_fork_index]);
-        return NULL;
-    }
-
-    // Small offset to reduce contention
-    if (ph->id % 2 == 0)
-        usleep(1000 * (st->config.time_to_eat_ms / 2));
-
-    while (!is_sim_over(st))
-    {
-        take_forks(ph);
-        eat(ph);
-        put_forks(ph);
-        if (st->config.must_eat_count > 0)
-        {
-            pthread_mutex_lock(&st->state_mutex);
-            if (ph->meals_eaten >= st->config.must_eat_count)
-            {
-                pthread_mutex_unlock(&st->state_mutex);
-                break;
-            }
-            pthread_mutex_unlock(&st->state_mutex);
-        }
-        philo_sleep_and_think(ph);
-    }
-    return NULL;
+	st = ph->state;
+	pthread_mutex_lock(&st->forks[ph->left_fork_index]);
+	log_action(st, ph->id, "has taken a fork", false);
+	while (!is_sim_over(st))
+		usleep(1000);
+	pthread_mutex_unlock(&st->forks[ph->left_fork_index]);
 }
 
-void *monitor_routine(void *arg)
+void	*philosopher_routine(void *arg)
 {
-    t_state *st = (t_state *)arg;
-    int n = st->config.number_of_philosophers;
-    while (1)
-    {
-        int satisfied = 0;
-        for (int i = 0; i < n; ++i)
-        {
-            pthread_mutex_lock(&st->state_mutex);
-            long long last_meal = st->philos[i].last_meal_ms;
-            int meals = st->philos[i].meals_eaten;
-            pthread_mutex_unlock(&st->state_mutex);
+	t_philo	*ph;
+	t_state	*st;
 
-            if (st->config.must_eat_count > 0 && meals >= st->config.must_eat_count)
-                satisfied++;
-
-            long long elapsed = now_ms() - last_meal;
-            if (elapsed >= st->config.time_to_die_ms)
-            {
-                pthread_mutex_lock(&st->state_mutex);
-                st->simulation_end = true;
-                pthread_mutex_unlock(&st->state_mutex);
-                log_action(st, st->philos[i].id, "died", true);
-                return NULL;
-            }
-        }
-        if (st->config.must_eat_count > 0 && satisfied == n)
-        {
-            pthread_mutex_lock(&st->state_mutex);
-            st->simulation_end = true;
-            pthread_mutex_unlock(&st->state_mutex);
-            return NULL;
-        }
-        usleep(1000);
-    }
+	ph = (t_philo *)arg;
+	st = ph->state;
+	if (st->config.number_of_philosophers == 1)
+	{
+		one_philo_edge(ph);
+		return (NULL);
+	}
+	if (ph->id % 2 == 0)
+		usleep(1000 * (st->config.time_to_eat_ms / 2));
+	while (!is_sim_over(st))
+	{
+		take_forks(ph);
+		eat(ph);
+		put_forks(ph);
+		if (st->config.must_eat_count > 0)
+		{
+			pthread_mutex_lock(&st->state_mutex);
+			if (ph->meals_eaten >= st->config.must_eat_count)
+			{
+				pthread_mutex_unlock(&st->state_mutex);
+				break ;
+			}
+			pthread_mutex_unlock(&st->state_mutex);
+		}
+		philo_sleep_and_think(ph);
+	}
+	return (NULL);
 }
 
+static int	check_one(t_state *st, int idx, int *satisfied)
+{
+	long long	last_meal;
+	int			meals;
+	long long	elapsed;
 
+	pthread_mutex_lock(&st->state_mutex);
+	last_meal = st->philos[idx].last_meal_ms;
+	meals = st->philos[idx].meals_eaten;
+	pthread_mutex_unlock(&st->state_mutex);
+	if (st->config.must_eat_count > 0
+		&& meals >= st->config.must_eat_count)
+		(*satisfied)++;
+	elapsed = now_ms() - last_meal;
+	if (elapsed >= st->config.time_to_die_ms)
+	{
+		pthread_mutex_lock(&st->state_mutex);
+		st->simulation_end = true;
+		pthread_mutex_unlock(&st->state_mutex);
+		log_action(st, st->philos[idx].id, "died", true);
+		return (1);
+	}
+	return (0);
+}
+
+void	*monitor_routine(void *arg)
+{
+	t_state	*st;
+	int		n;
+	int		idx;
+	int		satisfied;
+
+	st = (t_state *)arg;
+	n = st->config.number_of_philosophers;
+	while (1)
+	{
+		satisfied = 0;
+		idx = 0;
+		while (idx < n)
+		{
+			if (check_one(st, idx, &satisfied))
+				return (NULL);
+			idx++;
+		}
+		if (st->config.must_eat_count > 0 && satisfied == n)
+		{
+			pthread_mutex_lock(&st->state_mutex);
+			st->simulation_end = true;
+			pthread_mutex_unlock(&st->state_mutex);
+			return (NULL);
+		}
+		usleep(1000);
+	}
+}
