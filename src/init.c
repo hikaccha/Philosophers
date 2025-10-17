@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
+/*   By: hichikaw <hichikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/09/28 17:36:34 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/09/29 16:51:26 by hichikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,13 @@ int	parse_args(int argc, char **argv, t_config *config)
 	if (read_main_args(argv, &n, &die, &eat, &sleep) != 0
 		|| read_optional_arg(argc, argv, &must) != 0)
 	{
-		fprintf(stderr, "Error: arguments must be positive integers\n");
+		printf("Error: arguments must be positive integers\n");
 		return (-1);
 	}
 	if (n <= 0 || die <= 0 || eat <= 0 || sleep <= 0
 		|| (argc == 6 && must <= 0))
 	{
-		fprintf(stderr, "Error: non-positive values not allowed\n");
+		printf("Error: non-positive values not allowed\n");
 		return (-1);
 	}
 	config->number_of_philosophers = n;
@@ -153,18 +153,18 @@ int	init_state(t_state *state, const t_config *config)
 	state->philos = NULL;
 	if (init_mutexes(state) != 0)
 	{
-		fprintf(stderr, "Error: mutex init failed\n");
+		printf("Error: mutex init failed\n");
 		return (-1);
 	}
 	n = config->number_of_philosophers;
 	if (alloc_arrays(state, n) != 0)
 	{
-		fprintf(stderr, "Error: malloc failed\n");
+		printf("Error: malloc failed\n");
 		return (-1);
 	}
 	if (init_forks(state, n) != 0)
 	{
-		fprintf(stderr, "Error: fork mutex init failed\n");
+		printf( "Error: fork mutex init failed\n");
 		return (-1);
 	}
 	state->sim_start_ms = now_ms();

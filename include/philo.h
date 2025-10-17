@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
+/*   By: hichikaw <hichikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/27 20:18:57 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/09/28 19:23:57 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/09/30 19:16:51 by hichikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

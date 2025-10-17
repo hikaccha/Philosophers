@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
+/*   By: hichikaw <hichikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/09/28 19:27:21 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/09/30 20:23:04 by hichikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

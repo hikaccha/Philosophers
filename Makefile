@@ -18,18 +18,14 @@ SRC := \
 OBJ := $(SRC:.c=.o)
 DEP := $(OBJ:.o=.d)
 
-# 既定ターゲット
 all: $(NAME)
 
-# リンク
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) $(LDLIBS) -o $@
 
-# 各 .c -> .o （依存関係ファイル生成）
 %.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -MMD -MP -c $< -o $@
 
-# 依存関係読み込み
 -include $(DEP)
 
 clean:
@@ -40,7 +36,6 @@ fclean: clean
 
 re: fclean all
 
-# オプション: デバッグ用
 debug: CFLAGS += -g -O0
 debug: re
 
