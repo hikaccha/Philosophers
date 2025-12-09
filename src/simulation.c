@@ -6,7 +6,7 @@
 /*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/12/09 16:21:22 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/12/09 17:07:28 by ichikawahik      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,4 @@ void	eat(t_philo *ph)
 	pthread_mutex_lock(&st->state_mutex);
 	ph->meals_eaten += 1;
 	pthread_mutex_unlock(&st->state_mutex);
-}
-
-void	philo_sleep_and_think(t_philo *ph)
-{
-	log_action(ph->state, ph->id, "is sleeping", false);
-	sleep_ms_interruptible(ph->state, ph->state->config.time_to_sleep_ms);
-	log_action(ph->state, ph->id, "is thinking", false);
 }

@@ -39,6 +39,24 @@ static int	check_meals_done(t_philo *ph, t_state *st)
 	return (done);
 }
 
+void	philo_sleep_and_think(t_philo *ph)
+{
+	int		think_time;
+	t_state	*st;
+
+	st = ph->state;
+	log_action(st, ph->id, "is sleeping", false);
+	sleep_ms_interruptible(st, st->config.time_to_sleep_ms);
+	log_action(st, ph->id, "is thinking", false);
+	if (st->config.number_of_philosophers % 2 == 1)
+	{
+		think_time = st->config.time_to_eat_ms * 2
+			- st->config.time_to_sleep_ms;
+		if (think_time > 0)
+			usleep(think_time * 500);
+	}
+}
+
 static void	philo_loop(t_philo *ph, t_state *st)
 {
 	while (!is_sim_over(st))
@@ -68,7 +86,7 @@ void	*philosopher_routine(void *arg)
 		return (NULL);
 	}
 	if (ph->id % 2 == 0)
-		usleep(1000);
+		usleep(st->config.time_to_eat_ms * 500);
 	philo_loop(ph, st);
 	return (NULL);
 }
