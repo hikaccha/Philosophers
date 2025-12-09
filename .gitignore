@@ -5,6 +5,9 @@ philo
 *.o
 *.obj
 
+# Dependency files
+*.d
+
 # Debug files
 *.dSYM/
 *.gdb_history
