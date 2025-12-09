@@ -56,6 +56,7 @@ typedef struct s_state
 
 int			parse_args(int argc, char **argv, t_config *config);
 int			init_state(t_state *state, const t_config *config);
+void		init_philos(t_state *state, int n);
 void		*philosopher_routine(void *arg);
 void		*monitor_routine(void *arg);
 void		log_action(t_state *state, int philo_id,

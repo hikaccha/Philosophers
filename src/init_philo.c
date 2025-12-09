@@ -1,38 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   init_philo.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
+/*   By: hichikaw <hichikaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/09/28 17:36:37 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/09/29 16:51:26 by hichikaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long long	now_ms(void)
+static void	assign_forks(t_philo *p, int total)
 {
-	struct timeval		v;
-
-	gettimeofday(&v, NULL);
-	return ((long long)v.tv_sec * 1000LL + (v.tv_usec / 1000));
+	p->left_fork_index = p->id - 1;
+	p->right_fork_index = p->id % total;
 }
 
-void	sleep_ms_interruptible(t_state *state, int duration_ms)
+void	init_philos(t_state *state, int n)
 {
-	long long	start;
-	bool		end;
+	int		idx;
+	t_philo	*p;
 
-	start = now_ms();
-	while (now_ms() - start < duration_ms)
+	idx = 0;
+	while (idx < n)
 	{
-		pthread_mutex_lock(&state->state_mutex);
-		end = state->simulation_end;
-		pthread_mutex_unlock(&state->state_mutex);
-		if (end)
-			break ;
-		usleep(1000);
+		p = &state->philos[idx];
+		p->id = idx + 1;
+		p->state = state;
+		p->meals_eaten = 0;
+		p->last_meal_ms = state->sim_start_ms;
+		assign_forks(p, n);
+		idx++;
 	}
 }

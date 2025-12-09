@@ -10,7 +10,11 @@ LDLIBS := -pthread
 SRC := \
     src/main.c \
     src/init.c \
+    src/init_philo.c \
+    src/parse.c \
     src/simulation.c \
+    src/routine.c \
+    src/monitor.c \
     src/utils.c \
     src/print.c \
     src/cleanup.c
