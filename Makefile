@@ -1,11 +1,7 @@
 NAME := philo
 
 CC := cc
-
-CFLAGS := -Wall -Wextra -Werror
-CPPFLAGS := -I include
-LDFLAGS :=
-LDLIBS := -pthread
+CFLAGS := -Wall -Wextra -Werror -I include
 
 SRC := \
     src/main.c \
@@ -20,27 +16,18 @@ SRC := \
     src/cleanup.c
 
 OBJ := $(SRC:.c=.o)
-DEP := $(OBJ:.o=.d)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(LDFLAGS) $(LDLIBS) -o $@
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -MMD -MP -c $< -o $@
-
--include $(DEP)
+	$(CC) $(CFLAGS) $(OBJ) -pthread -o $@
 
 clean:
-	$(RM) $(OBJ) $(DEP)
+	$(RM) $(OBJ)
 
 fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
 
-debug: CFLAGS += -g -O0
-debug: re
-
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re
