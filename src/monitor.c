@@ -6,7 +6,7 @@
 /*   By: ichikawahikaru <ichikawahikaru@student.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 00:00:00 by ichikawahik       #+#    #+#             */
-/*   Updated: 2025/10/17 18:40:28 by ichikawahik      ###   ########.fr       */
+/*   Updated: 2025/12/17 16:41:24 by ichikawahik      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ static int	check_one(t_state *st, int idx, int *satisfied)
 	pthread_mutex_unlock(&st->state_mutex);
 	if (st->config.must_eat_count > 0
 		&& meals >= st->config.must_eat_count)
+	{
 		(*satisfied)++;
+		return (0);
+	}
 	elapsed = now_ms() - last_meal;
 	if (elapsed >= st->config.time_to_die_ms)
 	{
