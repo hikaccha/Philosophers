@@ -26,6 +26,6 @@ void	log_action(t_state *state, int philo_id,
 	stamp = now_ms() - state->sim_start_ms;
 	pthread_mutex_unlock(&state->state_mutex);
 	pthread_mutex_lock(&state->print_mutex);
-	printf("%lld ms: %d %s\n", stamp, philo_id, action);
+	printf("%lld %d %s\n", stamp, philo_id, action);
 	pthread_mutex_unlock(&state->print_mutex);
 }
